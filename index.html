@@ -1,118 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Días Libres</title>
-    <style>
-        /* Estilos Generales */
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #ffffff;
-            color: #2c3d46;
-        }
-
-        .container {
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #2c3d46;
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-
-        /* Input y Botones */
-        input {
-            width: 100%;
-            padding: 12px 20px;
-            border: 1px solid #ccc;
-            border-radius: 12px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-            color: #2c3d46;
-        }
-
-        .btn-primary {
-            background-color: #3455AA;
-            color: #ffffff;
-            border: none;
-            padding: 12px 0;
-            width: 100%;
-            border-radius: 25px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: background 0.3s;
-        }
-
-        .btn-outline {
-            background-color: #ffffff;
-            color: #3455AA;
-            border: 1px solid #3455AA;
-            padding: 12px 0;
-            width: 100%;
-            border-radius: 25px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        /* Pantalla de Resultados */
-        .result-card {
-            background-color: #f6f6f6;
-            padding: 40px 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            font-size: 14px;
-            color: #a0a0a0; /* Color gris suave para el texto según referencia */
-        }
-
-        .result-card p {
-            margin: 10px 0;
-        }
-
-        /* Alerta Inferior */
-        .footer-alert {
-            background-color: #fff1e6;
-            color: #e67e22;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            margin-top: 20px;
-        }
-
-        /* Control de pantallas */
-        #screen-results { display: none; }
-    </style>
-</head>
-<body>
-
-    <div id="screen-login" class="container">
-        <h1>Conoce tus días libres</h1>
-        <input type="text" id="rutInput" placeholder="Ingresa tu rut">
-        <button class="btn-primary" onclick="buscarDatos()">Mis vacaciones</button>
-        
-        <div class="footer-alert">
-            Los días administrativos <strong>cuentan desde marzo a marzo año calendario</strong>
-        </div>
-    </div>
-
-    <div id="screen-results" class="container">
-        <div class="result-card" id="card-content">
-            </div>
-        <button class="btn-primary" onclick="volver()">volver</button>
-    </div>
-
-  <script>
+<script>
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pub?gid=236422253&single=true&output=csv';
 
     async function buscarDatos() {
@@ -124,7 +10,7 @@
         }
 
         try {
-            // Añadimos un número aleatorio al final de la URL para evitar que el navegador use una versión vieja (caché)
+            // Anti-caché para asegurar datos frescos
             const response = await fetch(CSV_URL + '&cache=' + Math.random());
             const data = await response.text();
             
@@ -134,15 +20,16 @@
             for (let i = 1; i < filas.length; i++) {
                 if (!filas[i].trim()) continue;
 
-                // Detectamos si el separador es punto y coma o coma
+                // Detector de separador automático (punto y coma o coma)
                 let columnas = filas[i].includes(';') ? filas[i].split(';') : filas[i].split(',');
                 
                 if (columnas.length >= 2) {
-                    // Limpiamos el RUT de la columna 1 (segunda columna)
+                    // Limpiamos el RUT de la columna 1
                     const rutExcel = columnas[1].replace(/["']/g, "").trim().toUpperCase().replace(/[\.\-]/g, "");
                     
                     if (rutExcel === inputStr) {
                         encontrado = {
+                            nombre: columnas[0] ? columnas[0].replace(/["']/g, "").trim() : "Usuario",
                             vacaciones: columnas[2] ? columnas[2].replace(/["']/g, "").trim() : "0",
                             admin: columnas[3] ? columnas[3].replace(/["']/g, "").trim() : "0"
                         };
@@ -154,18 +41,20 @@
             if (encontrado) {
                 mostrarResultados(encontrado);
             } else {
-                alert("RUT " + inputStr + " no encontrado. Verifica que esté correcto en el Excel.");
+                alert("RUT no encontrado. Revisa que esté bien escrito.");
             }
 
         } catch (error) {
             console.error(error);
-            alert("Error al leer los datos. Asegúrate de que el Excel esté publicado correctamente.");
+            alert("Error al conectar con la base de datos.");
         }
     }
 
     function mostrarResultados(datos) {
         const card = document.getElementById('card-content');
+        // Aquí personalizamos el saludo con el nombre
         card.innerHTML = `
+            <p style="color: #2c3d46; font-weight: bold; font-size: 16px; margin-bottom: 20px;">Hola ${datos.nombre}</p>
             <p>Tienes ${datos.vacaciones} días de vacaciones disponibles</p>
             <p>Tienes ${datos.admin} días administrativos durante este año</p>
         `;
