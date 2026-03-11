@@ -3,74 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Vacaciones</title>
+    <title>Consulta de Días Libres</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #ffffff; }
-        .container { text-align: center; width: 90%; max-width: 500px; }
-        input { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 25px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; text-align: center; color: #a0a0a0; }
-        button { background-color: #3f51b5; color: white; border: none; padding: 15px 40px; border-radius: 25px; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #303f9f; }
-        .alert-box { background-color: #fff1e6; color: #e67e22; padding: 15px; border-radius: 10px; margin-top: 50px; font-size: 14px; font-weight: bold; }
-        #resultado { margin-top: 20px; padding: 20px; border-radius: 10px; display: none; background: #f9f9f9; border: 1px solid #eee; }
+        /* Estilos Generales */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+            color: #2c3d46;
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2c3d46;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        /* Input y Botones */
+        input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            color: #2c3d46;
+        }
+
+        .btn-primary {
+            background-color: #3455AA;
+            color: #ffffff;
+            border: none;
+            padding: 12px 0;
+            width: 100%;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+
+        .btn-outline {
+            background-color: #ffffff;
+            color: #3455AA;
+            border: 1px solid #3455AA;
+            padding: 12px 0;
+            width: 100%;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Pantalla de Resultados */
+        .result-card {
+            background-color: #f6f6f6;
+            padding: 40px 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #a0a0a0; /* Color gris suave para el texto según referencia */
+        }
+
+        .result-card p {
+            margin: 10px 0;
+        }
+
+        /* Alerta Inferior */
+        .footer-alert {
+            background-color: #fff1e6;
+            color: #e67e22;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        /* Control de pantallas */
+        #screen-results { display: none; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <input type="text" id="rutInput" placeholder="Ingresa tu rut">
-    <button onclick="buscarDatos()">Mis vacaciones</button>
-
-    <div id="resultado"></div>
-
-    <div class="alert-box">
-        Los días administrativos <strong>cuentan desde marzo a marzo año calendario</strong>
-    </div>
-</div>
-
-<script>
-    // PEGA AQUÍ TU ENLACE DE GOOGLE SHEETS (CSV)
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pub?outpuNK_AQUÍ';
-
-    async function buscarDatos() {
-        const rutBusqueda = document.getElementById('rutInput').value.trim();
-        const resDiv = document.getElementById('resultado');
+    <div id="screen-login" class="container">
+        <h1>Conoce tus días libres</h1>
+        <input type="text" id="rutInput" placeholder="Ingresa tu rut">
+        <button class="btn-primary" onclick="buscarDatos()">Mis vacaciones</button>
         
-        if(!rutBusqueda) return alert("Por favor ingresa un RUT");
+        <div class="footer-alert">
+            Los días administrativos <strong>cuentan desde marzo a marzo año calendario</strong>
+        </div>
+    </div>
 
-        try {
-            const response = await fetch(CSV_URL);
-            const data = await response.text();
-            const filas = data.split('\n').slice(1); // Quitamos la cabecera
+    <div id="screen-results" class="container">
+        <div class="result-card" id="card-content">
+            </div>
+        <button class="btn-primary" onclick="volver()">volver</button>
+    </div>
 
-            let usuarioEncontrado = null;
+    <script>
+        // REEMPLAZA ESTO CON TU LINK DE GOOGLE SHEETS (CSV)
+        const CSV_URL ='https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pub?output=csv';
 
-            filas.forEach(fila => {
-                const columnas = fila.split(',');
-                // columnas[1] es el RUT (segunda columna)
-                if(columnas[1] && columnas[1].trim() === rutBusqueda) {
-                    usuarioEncontrado = {
-                        nombre: columnas[0],
-                        vacaciones: columnas[2],
-                        admin: columnas[3]
-                    };
-                }
-            });
-
-            if(usuarioEncontrado) {
-                resDiv.style.display = 'block';
-                resDiv.innerHTML = `
-                    <h3>Hola, ${usuarioEncontrado.nombre}</h3>
-                    <p>Días de Vacaciones: <strong>${usuarioEncontrado.vacaciones}</strong></p>
-                    <p>Días Administrativos: <strong>${usuarioEncontrado.admin}</strong></p>
-                `;
-            } else {
-                alert("RUT no encontrado");
+        async function buscarDatos() {
+            const input = document.getElementById('rutInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
+            
+            if (!input) {
+                alert("Por favor, ingresa un RUT");
+                return;
             }
-        } catch (error) {
-            console.error("Error al leer los datos", error);
-        }
-    }
-</script>
 
-</body>
-</html>
+            try {
+                const response = await fetch(CSV_URL);
+                const data = await response.text();
