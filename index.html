@@ -3,182 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Días Libres</title>
+    <title>Consulta de Vacaciones - Compraquí</title>
     <style>
-        /* Estilos Generales */
+        :root {
+            --azul-principal: #3F92F6;
+            --azul-oscuro: #2c3d46;
+            --naranja: #ff8300;
+            --gris-fondo: #F3F3F3;
+            --blanco: #ffffff;
+        }
+
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
             display: flex;
+            height: 100vh;
+            color: var(--azul-oscuro);
+        }
+
+        /* Layout para Escritorio */
+        .split-screen {
+            display: flex;
+            width: 100%;
+        }
+
+        .left-side {
+            flex: 1;
+            background-image: url('ilustracion.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .right-side {
+            flex: 1;
+            background-color: var(--azul-principal);
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #ffffff;
-            color: #2c3d46;
+            padding: 40px;
+            position: relative;
         }
 
-        .container {
-            text-align: center;
+        .content-wrapper {
             width: 100%;
-            max-width: 400px;
-            padding: 20px;
+            max-width: 450px;
         }
 
+        /* Tipografía */
         h1 {
-            color: #2c3d46;
-            font-size: 24px;
-            margin-bottom: 30px;
+            color: var(--blanco);
+            font-size: 42px;
+            margin-bottom: 5px;
         }
 
-        /* Input y Botones */
+        h2 {
+            color: var(--blanco);
+            font-size: 20px;
+            font-weight: normal;
+            margin-bottom: 40px;
+        }
+
+        /* Elementos de Formulario */
         input {
             width: 100%;
-            padding: 12px 20px;
-            border: 1px solid #ccc;
+            padding: 15px 25px;
             border-radius: 12px;
-            font-size: 14px;
+            border: none;
+            font-size: 16px;
             margin-bottom: 20px;
             box-sizing: border-box;
-            color: #2c3d46;
         }
 
-        .btn-primary {
-            background-color: #3455AA;
-            color: #ffffff;
+        button {
+            background-color: var(--blanco);
+            color: var(--azul-principal);
             border: none;
-            padding: 12px 0;
-            width: 100%;
-            border-radius: 25px;
-            font-size: 14px;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
-            margin-bottom: 10px;
-            transition: background 0.3s;
+            transition: 0.3s;
         }
 
-        .btn-outline {
-            background-color: #ffffff;
-            color: #3455AA;
-            border: 1px solid #3455AA;
-            padding: 12px 0;
-            width: 100%;
-            border-radius: 25px;
-            font-size: 14px;
-            cursor: pointer;
+        button:hover {
+            background-color: var(--gris-fondo);
         }
 
-        /* Pantalla de Resultados */
+        /* Tarjeta de Resultados */
         .result-card {
-            background-color: #f6f6f6;
+            background-color: var(--blanco);
             padding: 40px 20px;
-            border-radius: 15px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             margin-bottom: 30px;
-            font-size: 14px;
-            color: #a0a0a0; /* Color gris suave para el texto según referencia */
         }
 
         .result-card p {
-            margin: 10px 0;
+            margin: 15px 0;
+            font-size: 18px;
+            color: var(--azul-oscuro);
         }
 
-        /* Alerta Inferior */
-        .footer-alert {
-            background-color: #fff1e6;
-            color: #e67e22;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            margin-top: 20px;
+        /* Alertas Inferiores */
+        .alert-box {
+            background-color: #ffe8d1; /* Naranja muy suave */
+            color: var(--naranja);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 40px;
+            font-size: 13px;
+            text-align: center;
         }
 
-        /* Control de pantallas */
-        #screen-results { display: none; }
+        .link-box {
+            background-color: var(--blanco);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .link-box a {
+            color: var(--azul-principal);
+            text-decoration: underline;
+        }
+
+        .logo-footer {
+            position: absolute;
+            bottom: 30px;
+            width: 150px;
+        }
+
+        /* MOBILE VERSION */
+        @media (max-width: 768px) {
+            body { height: auto; }
+            .split-screen { flex-direction: column; }
+            .left-side { height: 350px; }
+            .right-side { padding: 40px 20px; min-height: 100vh; }
+            h1 { font-size: 32px; }
+            .logo-footer { position: relative; bottom: 0; margin-top: 50px; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="screen-login" class="container">
-        <h1>Conoce tus días libres</h1>
-        <input type="text" id="rutInput" placeholder="Ingresa tu rut">
-        <button class="btn-primary" onclick="buscarDatos()">Mis vacaciones</button>
-        
-        <div class="footer-alert">
-            Los días administrativos <strong>cuentan desde marzo a marzo año calendario</strong>
+    <div class="split-screen">
+        <div class="left-side"></div>
+
+        <div class="right-side">
+            
+            <div class="content-wrapper" id="login-view">
+                <h1>¿Tengo vacaciones?</h1>
+                <h2>Conoce tus días libres</h2>
+                
+                <input type="text" id="rutInput" placeholder="Ingresa tu rut">
+                <button onclick="buscarDatos()">Mis vacaciones</button>
+            </div>
+
+            <div class="content-wrapper" id="results-view" style="display: none;">
+                <div class="result-card" id="card-content" style="display: block;">
+                    </div>
+                <div style="text-align: center;">
+                    <button onclick="volver()">Volver</button>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="alert-box">
+                    Los días administrativos <strong>cuentan desde marzo a marzo año calendario.</strong>
+                </div>
+                <div class="link-box">
+                    Para pedir tus días libres debes rellenar el <a href="#">siguiente formulario</a>
+                </div>
+            </div>
+
+            <img src="logo.png" alt="Logo Compraquí" class="logo-footer">
         </div>
     </div>
 
-    <div id="screen-results" class="container">
-        <div class="result-card" id="card-content">
-            </div>
-        <button class="btn-primary" onclick="volver()">volver</button>
-    </div>
+    <script>
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pub?gid=236422253&single=true&output=csv';
 
-  <script>
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pub?gid=236422253&single=true&output=csv';
+        async function buscarDatos() {
+            const inputStr = document.getElementById('rutInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
+            if (!inputStr) return alert("Ingresa un RUT");
 
-    async function buscarDatos() {
-        const inputStr = document.getElementById('rutInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
-        
-        if (!inputStr) {
-            alert("Por favor, ingresa un RUT");
-            return;
-        }
+            try {
+                const response = await fetch(CSV_URL + '&cache=' + Math.random());
+                const data = await response.text();
+                const filas = data.split(/\r?\n/);
+                let encontrado = null;
 
-        try {
-            // Anti-caché para asegurar datos frescos
-            const response = await fetch(CSV_URL + '&cache=' + Math.random());
-            const data = await response.text();
-            
-            const filas = data.split(/\r?\n/);
-            let encontrado = null;
-
-            for (let i = 1; i < filas.length; i++) {
-                if (!filas[i].trim()) continue;
-
-                // Detector de separador automático (punto y coma o coma)
-                let columnas = filas[i].includes(';') ? filas[i].split(';') : filas[i].split(',');
-                
-                if (columnas.length >= 2) {
-                    // Limpiamos el RUT de la columna 1
-                    const rutExcel = columnas[1].replace(/["']/g, "").trim().toUpperCase().replace(/[\.\-]/g, "");
+                for (let i = 1; i < filas.length; i++) {
+                    if (!filas[i].trim()) continue;
+                    let columnas = filas[i].includes(';') ? filas[i].split(';') : filas[i].split(',');
                     
-                    if (rutExcel === inputStr) {
-                        encontrado = {
-                            nombre: columnas[0] ? columnas[0].replace(/["']/g, "").trim() : "Usuario",
-                            vacaciones: columnas[2] ? columnas[2].replace(/["']/g, "").trim() : "0",
-                            admin: columnas[3] ? columnas[3].replace(/["']/g, "").trim() : "0"
-                        };
-                        break; 
+                    if (columnas.length >= 2) {
+                        const rutExcel = columnas[1].replace(/["']/g, "").trim().toUpperCase().replace(/[\.\-]/g, "");
+                        if (rutExcel === inputStr) {
+                            encontrado = {
+                                nombre: columnas[0].replace(/["']/g, "").trim(),
+                                vacaciones: columnas[2].replace(/["']/g, "").trim(),
+                                admin: columnas[3].replace(/["']/g, "").trim()
+                            };
+                            break; 
+                        }
                     }
                 }
-            }
 
-            if (encontrado) {
-                mostrarResultados(encontrado);
-            } else {
-                alert("RUT no encontrado. Revisa que esté bien escrito.");
+                if (encontrado) {
+                    document.getElementById('card-content').innerHTML = `
+                        <p style="font-weight: bold; font-size: 22px; color: #3455AA;">¡Hola ${encontrado.nombre}!</p>
+                        <p>Tienes <strong>${encontrado.vacaciones}</strong> días de vacaciones disponibles</p>
+                        <p>Tienes <strong>${encontrado.admin}</strong> días administrativos durante este año</p>
+                    `;
+                    document.getElementById('login-view').style.display = 'none';
+                    document.getElementById('results-view').style.display = 'block';
+                } else {
+                    alert("RUT no encontrado");
+                }
+            } catch (e) {
+                alert("Error de conexión");
             }
-
-        } catch (error) {
-            console.error(error);
-            alert("Error al conectar con la base de datos.");
         }
-    }
 
-    function mostrarResultados(datos) {
-        const card = document.getElementById('card-content');
-        // Aquí personalizamos el saludo con el nombre
-        card.innerHTML = `
-            <p style="color: #2c3d46; font-weight: bold; font-size: 16px; margin-bottom: 20px;">Hola ${datos.nombre}</p>
-            <p>Tienes ${datos.vacaciones} días de vacaciones disponibles</p>
-            <p>Tienes ${datos.admin} días administrativos durante este año</p>
-        `;
-        document.getElementById('screen-login').style.display = 'none';
-        document.getElementById('screen-results').style.display = 'block';
-    }
-
-    function volver() {
-        document.getElementById('screen-login').style.display = 'block';
-        document.getElementById('screen-results').style.display = 'none';
-        document.getElementById('rutInput').value = "";
-    }
-</script>
+        function volver() {
+            document.getElementById('login-view').style.display = 'block';
+            document.getElementById('results-view').style.display = 'none';
+            document.getElementById('rutInput').value = "";
+        }
+    </script>
+</body>
+</html>
