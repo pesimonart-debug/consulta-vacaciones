@@ -3,213 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Vacaciones - Compraquí</title>
+    <title>Consulta de Días Libres - Compraquí</title>
     <style>
-        :root {
-            --azul-principal: #3F92F6;
-            --azul-oscuro: #2c3d46;
-            --naranja: #ff8300;
-            --gris-fondo: #F3F3F3;
-            --blanco: #ffffff;
-        }
+        /* Estilos Generales y Adaptabilidad (Responsive) */
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; height: 100vh; display: flex; color: #2c3d46; }
+        .wrapper { display: flex; width: 100%; height: 100%; }
+        
+        /* Sección de Ilustración (Izquierda) */
+        .illustration-side { flex: 1; background-color: #E0F7FA; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 5vh; }
+        .illustration-side::before { content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%; background-image: url('URL_DE_TU_IMAGEN_DE_ILUSTRACION_FONDO'); background-size: cover; background-position: center; z-index: -1; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            color: var(--azul-oscuro);
-        }
+        /* Sección de Formulario (Derecha) */
+        .form-side { flex: 1; background-color: #3483FA; display: flex; flex-direction: column; justify-content: space-between; padding: 60px; box-sizing: border-box; color: white; position: relative; }
+        .form-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; max-width: 450px; margin: 0 auto; width: 100%; }
 
-        /* Layout para Escritorio */
-        .split-screen {
-            display: flex;
-            width: 100%;
-        }
+        /* Textos */
+        h1 { font-size: 36px; font-weight: bold; margin: 0 0 10px 0; color: white; }
+        h2 { font-size: 18px; font-weight: normal; margin: 0 0 40px 0; color: white; }
 
-        .left-side {
-            flex: 1;
-            background-image: url('ilustracion.jpg');
-            background-size: cover;
-            background-position: center;
-        }
+        /* Inputs */
+        .input-group { width: 100%; margin-bottom: 20px; }
+        input { width: 100%; padding: 15px 25px; border: none; border-radius: 12px; font-size: 16px; box-sizing: border-box; color: #a0a0a0; background-color: white; }
+        input::placeholder { color: #ccc; }
 
-        .right-side {
-            flex: 1;
-            background-color: var(--azul-principal);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            position: relative;
-        }
+        /* Botones */
+        .btn-check { background-color: white; color: #3483FA; border: none; padding: 15px 40px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-bottom: 40px; }
+        .btn-check:hover { background-color: #f0f0f0; }
+        .btn-back { background-color: white; color: #3483FA; border: none; padding: 15px 60px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 30px; }
 
-        .content-wrapper {
-            width: 100%;
-            max-width: 450px;
-        }
+        /* Tarjeta de Resultados (Oculta por defecto) */
+        #screen-results { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; }
+        .result-card { background-color: #f6f6f6; padding: 60px 40px; border-radius: 20px; text-align: center; color: #666; font-size: 16px; width: 100%; max-width: 500px; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .result-card p { margin: 15px 0; }
+        .user-welcome { color: #2c3d46; font-weight: bold; font-size: 20px; margin-bottom: 30px !important; }
 
-        /* Tipografía */
-        h1 {
-            color: var(--blanco);
-            font-size: 42px;
-            margin-bottom: 5px;
-        }
+        /* Cuadros de Información Inferiores */
+        .info-box { background-color: #FFF3E0; color: #E65100; padding: 15px 25px; border-radius: 10px; font-size: 13px; line-height: 1.4; width: 100%; box-sizing: border-box; margin-bottom: 15px; }
+        .info-box strong { color: #BF360C; }
+        .form-link-box { background-color: #F5F5F5; color: #666; padding: 15px 25px; border-radius: 10px; font-size: 13px; width: 100%; box-sizing: border-box; text-align: center; }
+        .form-link-box a { color: #3483FA; text-decoration: none; font-weight: bold; }
 
-        h2 {
-            color: var(--blanco);
-            font-size: 20px;
-            font-weight: normal;
-            margin-bottom: 40px;
-        }
+        /* Footer Logo */
+        .footer-logo { text-align: center; padding-top: 30px; }
+        .footer-logo img { max-width: 150px; }
 
-        /* Elementos de Formulario */
-        input {
-            width: 100%;
-            padding: 15px 25px;
-            border-radius: 12px;
-            border: none;
-            font-size: 16px;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: var(--blanco);
-            color: var(--azul-principal);
-            border: none;
-            padding: 15px 35px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background-color: var(--gris-fondo);
-        }
-
-        /* Tarjeta de Resultados */
-        .result-card {
-            background-color: var(--blanco);
-            padding: 40px 20px;
-            border-radius: 20px;
-            text-align: center;
-            display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-
-        .result-card p {
-            margin: 15px 0;
-            font-size: 18px;
-            color: var(--azul-oscuro);
-        }
-
-        /* Alertas Inferiores */
-        .alert-box {
-            background-color: #ffe8d1; /* Naranja muy suave */
-            color: var(--naranja);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 40px;
-            font-size: 13px;
-            text-align: center;
-        }
-
-        .link-box {
-            background-color: var(--blanco);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 13px;
-            text-align: center;
-        }
-
-        .link-box a {
-            color: var(--azul-principal);
-            text-decoration: underline;
-        }
-
-        .logo-footer {
-            position: absolute;
-            bottom: 30px;
-            width: 150px;
-        }
-
-        /* MOBILE VERSION */
+        /* Versión Mobile (se apila verticalmente) */
         @media (max-width: 768px) {
-            body { height: auto; }
-            .split-screen { flex-direction: column; }
-            .left-side { height: 350px; }
-            .right-side { padding: 40px 20px; min-height: 100vh; }
-            h1 { font-size: 32px; }
-            .logo-footer { position: relative; bottom: 0; margin-top: 50px; }
+            .wrapper { flex-direction: column; }
+            .illustration-side { height: 40vh; flex: none; }
+            .form-side { height: 60vh; flex: none; padding: 30px; }
+            h1 { font-size: 28px; }
+            .result-card { padding: 30px 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="split-screen">
-        <div class="left-side"></div>
+    <div class="wrapper">
+        <div class="illustration-side">
+            </div>
 
-        <div class="right-side">
+        <div class="form-side">
             
-            <div class="content-wrapper" id="login-view">
+            <div id="screen-login" class="form-content">
                 <h1>¿Tengo vacaciones?</h1>
-                <h2>Conoce tus días libres</h2>
-                
-                <input type="text" id="rutInput" placeholder="Ingresa tu rut">
-                <button onclick="buscarDatos()">Mis vacaciones</button>
+                <h2>Conoce tu saldo de días libres</h2>
+
+                <div class="input-group">
+                    <input type="text" id="rutInput" placeholder="Ingresa tu rut">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="docInput" placeholder="Ingresa tu número de documento">
+                </div>
+
+                <button class="btn-check" onclick="buscarDatos()">Mis vacaciones</button>
+
+                <div class="info-box">
+                    Los días administrativos <strong>cuentan desde marzo a marzo año calendario</strong>.<br>
+                    Si cuentas con más de 30 días de vacaciones, <strong>no puedes pedir adminsitrativos</strong>.
+                </div>
+                <div class="form-link-box">
+                    Para pedir tus días libres debes rellenar el <a href="URL_DE_TU_FORMULARIO" target="_blank">siguiente formulario</a>
+                </div>
             </div>
 
-            <div class="content-wrapper" id="results-view" style="display: none;">
-                <div class="result-card" id="card-content" style="display: block;">
+            <div id="screen-results">
+                <div class="result-card" id="card-content">
                     </div>
-                <div style="text-align: center;">
-                    <button onclick="volver()">Volver</button>
-                </div>
+                <button class="btn-back" onclick="volver()">Volver</button>
             </div>
 
-            <div class="content-wrapper">
-                <div class="alert-box">
-                    Los días administrativos <strong>cuentan desde marzo a marzo año calendario.</strong>
-                </div>
-                <div class="link-box">
-                    Para pedir tus días libres debes rellenar el <a href="#">siguiente formulario</a>
-                </div>
+            <div class="footer-logo">
+                <img src="URL_DE_TU_LOGO_COMPRAQUI" alt="Compraquí de BancoEstado">
             </div>
 
-            <img src="logo.png" alt="Logo Compraquí" class="logo-footer">
         </div>
     </div>
 
     <script>
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pub?gid=236422253&single=true&output=csv';
+        // PEGA AQUÍ TU NUEVO ENLACE CSV DE GOOGLE SHEETS
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pubhtml?gid=140555551&single=true';
 
         async function buscarDatos() {
-            const inputStr = document.getElementById('rutInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
-            if (!inputStr) return alert("Ingresa un RUT");
+            // Captura y limpieza de RUT y Documento
+            const rutInput = document.getElementById('rutInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
+            const docInput = document.getElementById('docInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
+            
+            if (!rutInput || !docInput) {
+                alert("Por favor, ingresa RUT y Número de Documento.");
+                return;
+            }
 
             try {
                 const response = await fetch(CSV_URL + '&cache=' + Math.random());
                 const data = await response.text();
+                
                 const filas = data.split(/\r?\n/);
                 let encontrado = null;
 
+                // Empezamos en i=1 para saltar el encabezado del Excel
                 for (let i = 1; i < filas.length; i++) {
                     if (!filas[i].trim()) continue;
+
+                    // Detector de separador (coma o punto y coma)
                     let columnas = filas[i].includes(';') ? filas[i].split(';') : filas[i].split(',');
                     
-                    if (columnas.length >= 2) {
+                    if (columnas.length >= 3) {
+                        // Limpiamos los datos del Excel para comparar
                         const rutExcel = columnas[1].replace(/["']/g, "").trim().toUpperCase().replace(/[\.\-]/g, "");
-                        if (rutExcel === inputStr) {
+                        const docExcel = columnas[2].replace(/["']/g, "").trim().toUpperCase().replace(/[\.\-]/g, "");
+                        
+                        // DOBLE VALIDACIÓN: RUT Y DOCUMENTO DEBEN COINCIDIR
+                        if (rutExcel === rutInput && docExcel === docInput) {
                             encontrado = {
-                                nombre: columnas[0].replace(/["']/g, "").trim(),
-                                vacaciones: columnas[2].replace(/["']/g, "").trim(),
-                                admin: columnas[3].replace(/["']/g, "").trim()
+                                nombre: columnas[0] ? columnas[0].replace(/["']/g, "").trim() : "Usuario",
+                                vacaciones: columnas[3] ? columnas[3].replace(/["']/g, "").trim() : "0",
+                                admin: columnas[4] ? columnas[4].replace(/["']/g, "").trim() : "0"
                             };
                             break; 
                         }
@@ -217,25 +146,36 @@
                 }
 
                 if (encontrado) {
-                    document.getElementById('card-content').innerHTML = `
-                        <p style="font-weight: bold; font-size: 22px; color: #3455AA;">¡Hola ${encontrado.nombre}!</p>
-                        <p>Tienes <strong>${encontrado.vacaciones}</strong> días de vacaciones disponibles</p>
-                        <p>Tienes <strong>${encontrado.admin}</strong> días administrativos durante este año</p>
-                    `;
-                    document.getElementById('login-view').style.display = 'none';
-                    document.getElementById('results-view').style.display = 'block';
+                    mostrarResultados(encontrado);
                 } else {
-                    alert("RUT no encontrado");
+                    alert("Los datos ingresados no coinciden con nuestros registros. Inténtalo nuevamente.");
                 }
-            } catch (e) {
-                alert("Error de conexión");
+
+            } catch (error) {
+                console.error(error);
+                alert("Hubo un error al conectar con la base de datos.");
             }
         }
 
+        function mostrarResultados(datos) {
+            const card = document.getElementById('card-content');
+            card.innerHTML = `
+                <p class="user-welcome">Hola ${datos.nombre}</p>
+                <p>Tienes ${datos.vacaciones} días de vacaciones disponibles</p>
+                <p>Tienes ${datos.admin} días administrativos durante este año</p>
+            `;
+            // Cambiamos visibilidad de pantallas
+            document.getElementById('screen-login').style.display = 'none';
+            document.getElementById('screen-results').style.display = 'flex';
+        }
+
         function volver() {
-            document.getElementById('login-view').style.display = 'block';
-            document.getElementById('results-view').style.display = 'none';
+            // Restauramos visibilidad original
+            document.getElementById('screen-login').style.display = 'flex';
+            document.getElementById('screen-results').style.display = 'none';
+            // Limpiamos campos
             document.getElementById('rutInput').value = "";
+            document.getElementById('docInput').value = "";
         }
     </script>
 </body>
