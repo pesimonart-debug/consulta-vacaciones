@@ -101,82 +101,76 @@
     </div>
 
     <script>
-        // PEGA AQUÍ TU NUEVO ENLACE CSV DE GOOGLE SHEETS
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pubhtml?gid=140555551&single=true';
+    // PEGA AQUÍ EL ENLACE QUE COPIASTE EN EL PASO 1 (Debe terminar en output=csv)
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pub?output=csv';
 
-        async function buscarDatos() {
-            // Captura y limpieza de RUT y Documento
-            const rutInput = document.getElementById('rutInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
-            const docInput = document.getElementById('docInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
+    async function buscarDatos() {
+        const rInput = document.getElementById('rutInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
+        const dInput = document.getElementById('docInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
+        
+        if (!rInput || !dInput) {
+            alert("Por favor, completa ambos campos.");
+            return;
+        }
+
+        try {
+            // El cache= es para que siempre lea la última versión del Excel
+            const response = await fetch(CSV_URL + '&cache=' + Math.random());
+            const text = await response.text();
             
-            if (!rutInput || !docInput) {
-                alert("Por favor, ingresa RUT y Número de Documento.");
-                return;
-            }
+            // Dividimos por filas y detectamos el separador (coma o punto y coma)
+            const filas = text.split(/\r?\n/);
+            let encontrado = null;
 
-            try {
-                const response = await fetch(CSV_URL + '&cache=' + Math.random());
-                const data = await response.text();
+            for (let i = 1; i < filas.length; i++) {
+                if (!filas[i].trim()) continue;
+
+                // Dividir fila: detecta ; o ,
+                let columnas = filas[i].split(/[;,]/);
                 
-                const filas = data.split(/\r?\n/);
-                let encontrado = null;
+                // Limpiar datos de comillas y espacios
+                const limpiar = (txt) => txt ? txt.replace(/["']/g, "").trim() : "";
 
-                // Empezamos en i=1 para saltar el encabezado del Excel
-                for (let i = 1; i < filas.length; i++) {
-                    if (!filas[i].trim()) continue;
-
-                    // Detector de separador (coma o punto y coma)
-                    let columnas = filas[i].includes(';') ? filas[i].split(';') : filas[i].split(',');
-                    
-                    if (columnas.length >= 3) {
-                        // Limpiamos los datos del Excel para comparar
-                        const rutExcel = columnas[1].replace(/["']/g, "").trim().toUpperCase().replace(/[\.\-]/g, "");
-                        const docExcel = columnas[2].replace(/["']/g, "").trim().toUpperCase().replace(/[\.\-]/g, "");
-                        
-                        // DOBLE VALIDACIÓN: RUT Y DOCUMENTO DEBEN COINCIDIR
-                        if (rutExcel === rutInput && docExcel === docInput) {
-                            encontrado = {
-                                nombre: columnas[0] ? columnas[0].replace(/["']/g, "").trim() : "Usuario",
-                                vacaciones: columnas[3] ? columnas[3].replace(/["']/g, "").trim() : "0",
-                                admin: columnas[4] ? columnas[4].replace(/["']/g, "").trim() : "0"
-                            };
-                            break; 
-                        }
-                    }
+                // Según tu Excel: 0:Nombre, 1:RUT, 2:Documento, 3:Vacaciones, 4:Admin
+                const rutEx = limpiar(columnas[1]).toUpperCase().replace(/[\.\-]/g, "");
+                const docEx = limpiar(columnas[2]).toUpperCase().replace(/[\.\-]/g, "");
+                
+                if (rutEx === rInput && docEx === dInput) {
+                    encontrado = {
+                        nombre: limpiar(columnas[0]),
+                        vacaciones: limpiar(columnas[3]),
+                        admin: limpiar(columnas[4])
+                    };
+                    break;
                 }
-
-                if (encontrado) {
-                    mostrarResultados(encontrado);
-                } else {
-                    alert("Los datos ingresados no coinciden con nuestros registros. Inténtalo nuevamente.");
-                }
-
-            } catch (error) {
-                console.error(error);
-                alert("Hubo un error al conectar con la base de datos.");
             }
-        }
 
-        function mostrarResultados(datos) {
-            const card = document.getElementById('card-content');
-            card.innerHTML = `
-                <p class="user-welcome">Hola ${datos.nombre}</p>
-                <p>Tienes ${datos.vacaciones} días de vacaciones disponibles</p>
-                <p>Tienes ${datos.admin} días administrativos durante este año</p>
-            `;
-            // Cambiamos visibilidad de pantallas
-            document.getElementById('screen-login').style.display = 'none';
-            document.getElementById('screen-results').style.display = 'flex';
-        }
+            if (encontrado) {
+                mostrarResultados(encontrado);
+            } else {
+                alert("Datos no coinciden. Revisa el RUT y N° de Documento.");
+            }
 
-        function volver() {
-            // Restauramos visibilidad original
-            document.getElementById('screen-login').style.display = 'flex';
-            document.getElementById('screen-results').style.display = 'none';
-            // Limpiamos campos
-            document.getElementById('rutInput').value = "";
-            document.getElementById('docInput').value = "";
+        } catch (e) {
+            alert("Error al cargar la base de datos. Verifica la publicación del Excel.");
         }
-    </script>
-</body>
-</html>
+    }
+
+    function mostrarResultados(datos) {
+        const card = document.getElementById('card-content');
+        card.innerHTML = `
+            <p class="user-welcome">Hola ${datos.nombre}</p>
+            <p>Tienes ${datos.vacaciones} días de vacaciones disponibles</p>
+            <p>Tienes ${datos.admin} días administrativos durante este año</p>
+        `;
+        document.getElementById('screen-login').style.display = 'none';
+        document.getElementById('screen-results').style.display = 'flex';
+    }
+
+    function volver() {
+        document.getElementById('screen-login').style.display = 'flex';
+        document.getElementById('screen-results').style.display = 'none';
+        document.getElementById('rutInput').value = "";
+        document.getElementById('docInput').value = "";
+    }
+</script>
