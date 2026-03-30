@@ -5,87 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Días Libres - Compraquí</title>
     <style>
-        /* Estilos Generales y Adaptabilidad (Responsive) */
-        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; height: 100vh; display: flex; color: #2c3d46; }
+        /* Estilos Generales */
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; height: 100vh; display: flex; color: #2c3d46; overflow: hidden; }
         .wrapper { display: flex; width: 100%; height: 100%; }
         
-        /* Sección de Ilustración (Izquierda) */
-        .illustration-side { 
-    flex: 1; 
-    background-color: #E0F7FA; 
-    display: flex; 
-    justify-content: center; 
-    align-items: flex-end; 
-    padding-bottom: 5vh; 
-    position: relative; 
-    overflow: hidden;
-}
-
-.illustration-side::before { 
-    content: ''; 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-image: url('ilustracion.jpg'); 
-    background-size: cover; 
-    background-position: center; 
-    z-index: 1; 
-}
+        /* Sección de Ilustración */
+        .illustration-side { flex: 1; background-color: #E0F7FA; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 5vh; overflow: hidden; }
+        .illustration-side::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background-image: url('ilustracion.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            z-index: 1; 
+        }
 
         /* Sección de Formulario (Derecha) */
-        .form-side { flex: 1; background-color: #3483FA; display: flex; flex-direction: column; justify-content: space-between; padding: 60px; box-sizing: border-box; color: white; position: relative; }
+        .form-side { flex: 1; background-color: #3483FA; display: flex; flex-direction: column; justify-content: space-between; padding: 60px; box-sizing: border-box; color: white; position: relative; z-index: 2; }
         .form-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; max-width: 450px; margin: 0 auto; width: 100%; }
 
-        /* Textos */
         h1 { font-size: 36px; font-weight: bold; margin: 0 0 10px 0; color: white; }
         h2 { font-size: 18px; font-weight: normal; margin: 0 0 40px 0; color: white; }
 
         /* Inputs */
         .input-group { width: 100%; margin-bottom: 20px; }
-        input { width: 100%; padding: 15px 25px; border: none; border-radius: 12px; font-size: 16px; box-sizing: border-box; color: #a0a0a0; background-color: white; }
-        input::placeholder { color: #ccc; }
+        input { width: 100%; padding: 15px 25px; border: none; border-radius: 12px; font-size: 16px; box-sizing: border-box; color: #2c3d46; background-color: white; }
 
         /* Botones */
-        .btn-check { background-color: white; color: #3483FA; border: none; padding: 15px 40px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-bottom: 40px; }
-        .btn-check:hover { background-color: #f0f0f0; }
-        .btn-back { background-color: white; color: #3483FA; border: none; padding: 15px 60px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+        .btn-check { background-color: white; color: #3483FA; border: none; padding: 12px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 40px; }
+        .btn-back { background-color: white; color: #3483FA; border: none; padding: 15px 60px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; align-self: center; }
+        
+        /* Botón de Consideraciones (Naranja suave según tu imagen) */
+        .btn-info-trigger { width: 100%; background-color: #FFF3E0; color: #ff8300; border: none; padding: 15px; border-radius: 10px; font-size: 14px; cursor: pointer; text-align: center; margin-bottom: 15px; }
+        .btn-info-trigger strong { color: #ff8300; }
 
-        /* Tarjeta de Resultados (Oculta por defecto) */
-        #screen-results { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; }
-        .result-card { background-color: #f6f6f6; padding: 60px 40px; border-radius: 20px; text-align: center; color: #666; font-size: 16px; width: 100%; max-width: 500px; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .result-card p { margin: 15px 0; }
-        .user-welcome { color: #2c3d46; font-weight: bold; font-size: 20px; margin-bottom: 30px !important; }
+        /* Pantallas */
+        #screen-results, #screen-info { display: none; width: 100%; flex-direction: column; justify-content: center; }
 
-        /* Cuadros de Información Inferiores */
-        .info-box { background-color: #FFF3E0; color: #E65100; padding: 15px 25px; border-radius: 10px; font-size: 13px; line-height: 1.4; width: 100%; box-sizing: border-box; margin-bottom: 15px; }
-        .info-box strong { color: #BF360C; }
-        .form-link-box { background-color: #F5F5F5; color: #666; padding: 15px 25px; border-radius: 10px; font-size: 13px; width: 100%; box-sizing: border-box; text-align: center; }
+        /* Tarjetas */
+        .result-card, .info-card { background-color: #f6f6f6; padding: 40px; border-radius: 20px; color: #444; width: 100%; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .info-card { font-size: 14px; line-height: 1.6; color: #2c3d46; }
+        .info-card ul { padding-left: 20px; }
+        .info-card li { margin-bottom: 15px; }
+        .user-welcome { color: #2c3d46; font-weight: bold; font-size: 22px; margin-bottom: 20px; display: block; }
+
+        .form-link-box { background-color: rgba(255,255,255,0.9); color: #666; padding: 15px; border-radius: 10px; font-size: 13px; width: 100%; text-align: center; box-sizing: border-box; }
         .form-link-box a { color: #3483FA; text-decoration: none; font-weight: bold; }
 
-        /* Footer Logo */
-        .footer-logo { text-align: center; padding-top: 30px; }
-        .footer-logo img { max-width: 150px; }
+        .footer-logo { text-align: center; padding-top: 20px; }
+        .footer-logo img { max-width: 140px; }
 
-        /* Versión Mobile (se apila verticalmente) */
         @media (max-width: 768px) {
+            body { overflow: auto; }
             .wrapper { flex-direction: column; }
-            .illustration-side { height: 40vh; flex: none; }
-            .form-side { height: 60vh; flex: none; padding: 30px; }
-            h1 { font-size: 28px; }
-            .result-card { padding: 30px 20px; }
+            .illustration-side { height: 35vh; flex: none; }
+            .form-side { padding: 30px; }
         }
     </style>
 </head>
 <body>
 
     <div class="wrapper">
-        <div class="illustration-side">
-            </div>
+        <div class="illustration-side"></div>
 
         <div class="form-side">
             
+            <!-- PANTALLA 1: LOGIN -->
             <div id="screen-login" class="form-content">
                 <h1>¿Tengo vacaciones?</h1>
                 <h2>Conoce tu saldo de días libres</h2>
@@ -99,18 +85,31 @@
 
                 <button class="btn-check" onclick="buscarDatos()">Mis vacaciones</button>
 
-                <div class="info-box">
-                    Los días administrativos <strong>cuentan desde marzo a marzo año calendario</strong>.<br>
-                    Si cuentas con más de 30 días de vacaciones, <strong>no puedes pedir adminsitrativos</strong>.
-                </div>
+                <button class="btn-info-trigger" onclick="verInfo()">
+                    Si vas a pedir días debes tener en <strong>cuenta lo siguiente</strong>
+                </button>
+
                 <div class="form-link-box">
                     Para pedir tus días libres debes rellenar el <a href="URL_DE_TU_FORMULARIO" target="_blank">siguiente formulario</a>
                 </div>
             </div>
 
-            <div id="screen-results">
-                <div class="result-card" id="card-content">
-                    </div>
+            <!-- PANTALLA 2: CONSIDERACIONES -->
+            <div id="screen-info" class="form-content">
+                <div class="info-card">
+                    <ul>
+                        <li>Los días administrativos <strong>cuentan desde marzo a marzo año calendario</strong>.</li>
+                        <li>Si cuentas con más de 30 días de vacaciones, <strong>no puedes pedir administrativos</strong>.</li>
+                        <li>Debes haber <strong>informado/conversado con tu líder directo</strong> antes de pedir tus días libres.</li>
+                        <li>Días de beneficios extras (mudanzas, matrimonio, etc) no están considerados acá.</li>
+                    </ul>
+                </div>
+                <button class="btn-back" onclick="volver()">Volver</button>
+            </div>
+
+            <!-- PANTALLA 3: RESULTADOS -->
+            <div id="screen-results" class="form-content">
+                <div class="result-card" id="card-content"></div>
                 <button class="btn-back" onclick="volver()">Volver</button>
             </div>
 
@@ -122,8 +121,18 @@
     </div>
 
     <script>
-    // PEGA AQUÍ EL ENLACE QUE COPIASTE EN EL PASO 1 (Debe terminar en output=csv)
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvXkuchavTbb0bEgOZIUhsuzu4vsrmwYI0dxNWaIzLYPEiG5cUo-L9w8IxPXwewYvLRjhty85EVbvN/pub?output=csv';
+
+    function verInfo() {
+        document.getElementById('screen-login').style.display = 'none';
+        document.getElementById('screen-info').style.display = 'flex';
+    }
+
+    function volver() {
+        document.getElementById('screen-login').style.display = 'flex';
+        document.getElementById('screen-results').style.display = 'none';
+        document.getElementById('screen-info').style.display = 'none';
+    }
 
     async function buscarDatos() {
         const rInput = document.getElementById('rutInput').value.trim().toUpperCase().replace(/[\.\-]/g, "");
@@ -135,24 +144,16 @@
         }
 
         try {
-            // El cache= es para que siempre lea la última versión del Excel
             const response = await fetch(CSV_URL + '&cache=' + Math.random());
             const text = await response.text();
-            
-            // Dividimos por filas y detectamos el separador (coma o punto y coma)
             const filas = text.split(/\r?\n/);
             let encontrado = null;
 
             for (let i = 1; i < filas.length; i++) {
                 if (!filas[i].trim()) continue;
-
-                // Dividir fila: detecta ; o ,
                 let columnas = filas[i].split(/[;,]/);
-                
-                // Limpiar datos de comillas y espacios
                 const limpiar = (txt) => txt ? txt.replace(/["']/g, "").trim() : "";
 
-                // Según tu Excel: 0:Nombre, 1:RUT, 2:Documento, 3:Vacaciones, 4:Admin
                 const rutEx = limpiar(columnas[1]).toUpperCase().replace(/[\.\-]/g, "");
                 const docEx = limpiar(columnas[2]).toUpperCase().replace(/[\.\-]/g, "");
                 
@@ -167,31 +168,21 @@
             }
 
             if (encontrado) {
-                mostrarResultados(encontrado);
+                const card = document.getElementById('card-content');
+                card.innerHTML = `
+                    <span class="user-welcome">Hola ${encontrado.nombre}</span>
+                    <p>Tienes <strong>${encontrado.vacaciones}</strong> días de vacaciones disponibles</p>
+                    <p>Tienes <strong>${encontrado.admin}</strong> días administrativos durante este año</p>
+                `;
+                document.getElementById('screen-login').style.display = 'none';
+                document.getElementById('screen-results').style.display = 'flex';
             } else {
                 alert("Datos no coinciden. Revisa el RUT y N° de Documento.");
             }
-
         } catch (e) {
-            alert("Error al cargar la base de datos. Verifica la publicación del Excel.");
+            alert("Error al cargar la base de datos.");
         }
     }
-
-    function mostrarResultados(datos) {
-        const card = document.getElementById('card-content');
-        card.innerHTML = `
-            <p class="user-welcome">Hola ${datos.nombre}</p>
-            <p>Tienes ${datos.vacaciones} días de vacaciones disponibles</p>
-            <p>Tienes ${datos.admin} días administrativos durante este año</p>
-        `;
-        document.getElementById('screen-login').style.display = 'none';
-        document.getElementById('screen-results').style.display = 'flex';
-    }
-
-    function volver() {
-        document.getElementById('screen-login').style.display = 'flex';
-        document.getElementById('screen-results').style.display = 'none';
-        document.getElementById('rutInput').value = "";
-        document.getElementById('docInput').value = "";
-    }
-</script>
+    </script>
+</body>
+</html>
